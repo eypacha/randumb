@@ -52,5 +52,10 @@ def get_random_pirate() -> Optional[Pirate]:
     row = c.fetchone()
     conn.close()
     if row:
-        return Pirate(id=UUID(row[0]), text=row[1], lang=json.loads(row[2]))
+        lang_field = json.loads(row[2])
+        if isinstance(lang_field, dict):
+            lang_code, text = next(iter(lang_field.items()))
+            return Pirate(id=UUID(row[0]), text=text, lang=lang_code)
+        else:
+            return Pirate(id=UUID(row[0]), text=row[1], lang=lang_field)
     return None
