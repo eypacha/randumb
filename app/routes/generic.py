@@ -24,7 +24,10 @@ def create_generic_router(resource_name: str, config: dict, crud):
         limit: int
         total_pages: int
 
-    @router.get("/{lang}", response_model=PaginatedList)
+    plural = config.get("plural", f"{resource_name} items")
+    singular = config.get("singular", f"{resource_name} item")
+
+    @router.get("/{lang}", response_model=PaginatedList, summary=f"List {plural}", description=f"Lists {plural} by language with pagination.")
     def list_items_by_lang(
         lang: str = Path(...),
         page: int = Query(1, ge=1),
@@ -36,7 +39,7 @@ def create_generic_router(resource_name: str, config: dict, crud):
             raise HTTPException(status_code=500, detail=str(e))
 
     if os.getenv("ENABLE_CREATE", "true").lower() == "true":
-        @router.post("/", response_model=ItemOut)
+        @router.post("/", response_model=ItemOut, summary=f"Create a new {singular}", description=f"Creates a new {singular} in the {resource_name} resource.")
         def create_item(item: ItemCreate):
             try:
                 return crud.create_item(resource_name, item)
@@ -44,7 +47,7 @@ def create_generic_router(resource_name: str, config: dict, crud):
                 raise HTTPException(status_code=500, detail=str(e))
 
     if os.getenv("ENABLE_DELETE", "true").lower() == "true":
-        @router.delete("/{id}", status_code=204)
+        @router.delete("/{id}", status_code=204, summary=f"Delete a {singular}", description=f"Deletes a {singular} from the {resource_name} resource by ID.")
         def delete_item(id: UUID = Path(...)):
             try:
                 deleted = crud.delete_item(resource_name, str(id))
