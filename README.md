@@ -1,30 +1,32 @@
 
 # Randumb API
 
-API de ejemplo usando FastAPI, SQLite y Pydantic para insultos piratas aleatorios.
+Example API using FastAPI, SQLite, and Pydantic for random dumb things.
 
-## Uso rápido
+This project is designed to let you create and retrieve random silly content, starting with pirate insults, but easily extendable to any other kind of random fun data.
 
-1. Instala dependencias:
+## Quick Start
+
+1. Install dependencies:
    ```sh
    pip install -r requirements.txt
    ```
-2. Ejecuta el servidor (desde la raíz):
+2. Run the server (from the project root):
    ```sh
    uvicorn app.main:app --reload
    ```
 
-
 ## Endpoints
 
-- `POST /pirates/` — Agrega un insulto pirata
+- `POST /pirates/` — Add a pirate insult (example resource)
+- `GET /pirates/` — List all pirate insults
 
-## Estructura
+## Structure
 
-- `app/models/` — Modelos de base de datos (listo para crecer)
-- `app/schemas/` — Esquemas Pydantic (ver `pirates.py`)
-- `app/functions/` — Lógica de negocio y acceso a datos (ver `pirates.py`)
-- `app/routes/` — Endpoints de la API (ver `pirates.py`)
-- `app/main.py` — Punto de entrada de la aplicación
+- `app/models/` — Database models (ready to grow)
+- `app/schemas/` — Pydantic schemas (see `pirates.py`)
+- `app/functions/` — Business logic and data access (see `pirates.py`)
+- `app/routes/` — API endpoints (see `pirates.py`)
+- `app/main.py` — Application entry point
 
-En la raíz quedan solo archivos de configuración y documentación.
+The root folder contains only configuration and documentation files.
