@@ -1,8 +1,8 @@
+import os
 from fastapi import APIRouter, HTTPException
 from app.schemas.pirates import Pirate, PirateCreate, PirateLangOut, PirateLangOutSingle
 from fastapi import Path
 from app.functions.pirates import add_pirate, init_db, get_all_pirates, get_random_pirate
-from typing import Dict
 
 router = APIRouter(prefix="/pirates", tags=["Pirates insults"])
 
@@ -10,13 +10,14 @@ router = APIRouter(prefix="/pirates", tags=["Pirates insults"])
 def startup_event():
     init_db()
 
-@router.post("/", response_model=Pirate, summary="Create a pirate insult", description="Add a new pirate insult to the database.")
-def create_pirate(pirate: PirateCreate):
-    try:
-        pirate_id = add_pirate(pirate)
-        return Pirate(id=pirate_id, text=pirate.text, lang=pirate.lang)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating pirate insult: {e}")
+if os.getenv("ENABLE_CREATE_PIRATE", "true").lower() == "true":
+    @router.post("/", response_model=Pirate, summary="Create a pirate insult", description="Add a new pirate insult to the database.")
+    def create_pirate(pirate: PirateCreate):
+        try:
+            pirate_id = add_pirate(pirate)
+            return Pirate(id=pirate_id, text=pirate.text, lang=pirate.lang)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error creating pirate insult: {e}")
 
 @router.get("/{lang}", response_model=list[PirateLangOut], summary="List pirate insults by language", description="Get all pirate insults in the requested language.")
 def list_pirates_by_lang(lang: str = Path(..., description="ISO code for language, e.g. 'en' or 'es'")):
