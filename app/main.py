@@ -10,10 +10,12 @@ load_dotenv()
 # in the Swagger UI next to its section header.
 openapi_tags = []
 for resource_name, cfg in RESOURCES.items():
-    openapi_tags.append({
-        "name": resource_name.capitalize(),
-        "description": cfg.get("description", ""),
-    })
+    openapi_tags.append(
+        {
+            "name": resource_name.capitalize(),
+            "description": cfg.get("description", ""),
+        }
+    )
 
 app = FastAPI(
     title="Randumb API",
