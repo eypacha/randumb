@@ -3,9 +3,6 @@ from pydantic import BaseModel
 from uuid import UUID
 from typing import List
 
-# Este esqueleto asume que tendrás funciones CRUD genéricas en functions/generic_crud.py
-# y que cada recurso tiene una tabla en la base de datos con los campos definidos en config/resources.py
-
 def create_generic_router(resource_name: str, config: dict, crud):
     router = APIRouter(prefix=f"/{resource_name}", tags=[resource_name.capitalize()])
 
