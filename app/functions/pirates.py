@@ -7,16 +7,20 @@ import json
 
 DB_PATH = "pirates.db"
 
+
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS pirates (
+    c.execute(
+        """CREATE TABLE IF NOT EXISTS pirates (
         id TEXT PRIMARY KEY,
         text TEXT NOT NULL,
         lang TEXT NOT NULL
-    )''')
+    )"""
+    )
     conn.commit()
     conn.close()
+
 
 def add_pirate(pirate: PirateCreate) -> UUID:
     try:
@@ -25,7 +29,10 @@ def add_pirate(pirate: PirateCreate) -> UUID:
         pirate_id = str(uuid4())
         lang_dict = {pirate.lang: pirate.text}
         lang_json = json.dumps(lang_dict)
-        c.execute("INSERT INTO pirates (id, text, lang) VALUES (?, ?, ?)", (pirate_id, pirate.text, lang_json))
+        c.execute(
+            "INSERT INTO pirates (id, text, lang) VALUES (?, ?, ?)",
+            (pirate_id, pirate.text, lang_json),
+        )
         conn.commit()
         conn.close()
         return UUID(pirate_id)
@@ -52,7 +59,11 @@ def get_pirates_by_lang_paginated(lang: str, page: int = 1, limit: int = 10):
                 pirates.append(Pirate(id=UUID(row[0]), text=text, lang=lang_code))
             else:
                 pirates.append(Pirate(id=UUID(row[0]), text=row[1], lang=lang_field))
-        filtered = [PirateLangOut(id=p.id, text=p.text, lang=p.lang) for p in pirates if p.lang == lang]
+        filtered = [
+            PirateLangOut(id=p.id, text=p.text, lang=p.lang)
+            for p in pirates
+            if p.lang == lang
+        ]
         total = len(filtered)
         total_pages = (total + limit - 1) // limit if total > 0 else 1
         start = (page - 1) * limit
@@ -61,7 +72,8 @@ def get_pirates_by_lang_paginated(lang: str, page: int = 1, limit: int = 10):
         return items, total, page, limit, total_pages
     except Exception as e:
         raise RuntimeError(f"Database error: {e}")
-    
+
+
 def get_random_pirate() -> Optional[Pirate]:
     try:
         conn = sqlite3.connect(DB_PATH)
