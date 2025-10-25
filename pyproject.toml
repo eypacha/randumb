@@ -1,0 +1,14 @@
+# Add code formatting configuration for Black
+[tool.black]
+line-length = 88
+target-version = ['py311', 'py312', 'py313', 'py314']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+  | dist
+  | migrations
+)/
+'''
