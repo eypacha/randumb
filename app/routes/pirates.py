@@ -3,7 +3,7 @@ from app.schemas.pirates import Pirate
 from app.functions.pirates import add_pirate, init_db, get_all_pirates
 from typing import Dict
 
-router = APIRouter(prefix="/pirates", tags=["Pirates"])
+router = APIRouter(prefix="/pirates", tags=[{"name": "Pirates", "description": "Random pirate insults"}])
 
 @router.on_event("startup")
 def startup_event():
