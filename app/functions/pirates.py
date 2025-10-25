@@ -1,3 +1,17 @@
+def delete_pirate_by_id(pirate_id: str) -> bool:
+    """Elimina un insulto por su id. Devuelve True si se eliminó, False si no existía."""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("DELETE FROM pirates WHERE id = ?", (pirate_id,))
+        deleted = c.rowcount
+        conn.commit()
+        conn.close()
+        return deleted > 0
+    except Exception as e:
+        raise RuntimeError(f"Database error: {e}")
+
+
 from app.schemas.pirates import PirateLangOut
 import sqlite3
 from typing import Optional

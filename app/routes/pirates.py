@@ -11,9 +11,32 @@ from app.functions.pirates import (
     init_db,
     get_random_pirate,
     get_pirates_by_lang_paginated,
+    delete_pirate_by_id,
 )
 
+from uuid import UUID
+
+
 router = APIRouter(prefix="/pirates", tags=["Pirates insults"])
+
+
+@router.delete(
+    "/{id}",
+    summary="Delete a pirate insult by id",
+    description="Delete a pirate insult by its UUID.",
+    status_code=204,
+)
+def delete_pirate(id: UUID = Path(..., description="Pirate insult UUID")):
+    try:
+        deleted = delete_pirate_by_id(str(id))
+        if not deleted:
+            raise HTTPException(status_code=404, detail="Pirate insult not found.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error deleting pirate insult: {e}"
+        )
 
 
 @router.on_event("startup")
@@ -36,6 +59,27 @@ if os.getenv("ENABLE_CREATE_PIRATE", "true").lower() == "true":
         except Exception as e:
             raise HTTPException(
                 status_code=500, detail=f"Error creating pirate insult: {e}"
+            )
+
+
+if os.getenv("ENABLE_DELETE_PIRATE", "true").lower() == "true":
+
+    @router.delete(
+        "/{id}",
+        summary="Delete a pirate insult by id",
+        description="Delete a pirate insult by its UUID.",
+        status_code=204,
+    )
+    def delete_pirate(id: UUID = Path(..., description="Pirate insult UUID")):
+        try:
+            deleted = delete_pirate_by_id(str(id))
+            if not deleted:
+                raise HTTPException(status_code=404, detail="Pirate insult not found.")
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, detail=f"Error deleting pirate insult: {e}"
             )
 
 
