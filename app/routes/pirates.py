@@ -1,7 +1,12 @@
+
 import os
+from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
-from app.schemas.pirates import Pirate, PirateCreate, PirateLangOut, PirateLangOutSingle
 from fastapi import Path
+
+load_dotenv()
+
+from app.schemas.pirates import Pirate, PirateCreate, PirateLangOut, PirateLangOutSingle
 from app.functions.pirates import add_pirate, init_db, get_all_pirates, get_random_pirate
 
 router = APIRouter(prefix="/pirates", tags=["Pirates insults"])
