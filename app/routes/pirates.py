@@ -2,12 +2,12 @@
 import os
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
-from fastapi import Path
+from fastapi import Path, Query
 
 load_dotenv()
 
 from app.schemas.pirates import Pirate, PirateCreate, PirateLangOut, PirateLangOutSingle
-from app.functions.pirates import add_pirate, init_db, get_all_pirates, get_random_pirate
+from app.functions.pirates import add_pirate, init_db, get_random_pirate, get_pirates_by_lang_paginated
 
 router = APIRouter(prefix="/pirates", tags=["Pirates insults"])
 
@@ -24,12 +24,30 @@ if os.getenv("ENABLE_CREATE_PIRATE", "true").lower() == "true":
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error creating pirate insult: {e}")
 
-@router.get("/{lang}", response_model=list[PirateLangOut], summary="List pirate insults by language", description="Get all pirate insults in the requested language.")
-def list_pirates_by_lang(lang: str = Path(..., description="ISO code for language, e.g. 'en' or 'es'")):
+from pydantic import BaseModel
+
+class PaginatedPirateList(BaseModel):
+    items: list[PirateLangOut]
+    total: int
+    page: int
+    limit: int
+    total_pages: int
+
+@router.get("/{lang}", response_model=PaginatedPirateList, summary="List pirate insults by language", description="Get all pirate insults in the requested language, paginated.")
+def list_pirates_by_lang(
+    lang: str = Path(..., description="ISO code for language, e.g. 'en' or 'es'"),
+    page: int = Query(1, ge=1, description="Page number (starts at 1)"),
+    limit: int = Query(10, ge=1, le=100, description="Results per page (max 100)")
+):
     try:
-        pirates = get_all_pirates()
-        # p.lang ahora es string, no dict
-        return [PirateLangOut(id=p.id, text=p.text, lang=p.lang) for p in pirates if p.lang == lang]
+        items, total, page, limit, total_pages = get_pirates_by_lang_paginated(lang, page, limit)
+        return PaginatedPirateList(
+            items=items,
+            total=total,
+            page=page,
+            limit=limit,
+            total_pages=total_pages
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error listing pirate insults: {e}")
 

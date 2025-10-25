@@ -1,4 +1,4 @@
-
+from app.schemas.pirates import PirateLangOut
 import sqlite3
 from typing import Optional
 from app.schemas.pirates import Pirate, PirateCreate
@@ -33,7 +33,11 @@ def add_pirate(pirate: PirateCreate) -> UUID:
         # Aquí podrías loggear el error si quieres
         raise RuntimeError(f"Database error: {e}")
 
-def get_all_pirates() -> list[Pirate]:
+
+def get_pirates_by_lang_paginated(lang: str, page: int = 1, limit: int = 10):
+    """
+    Devuelve una tupla (items, total, page, limit, total_pages) de insultos filtrados por idioma y paginados.
+    """
     try:
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
@@ -48,10 +52,16 @@ def get_all_pirates() -> list[Pirate]:
                 pirates.append(Pirate(id=UUID(row[0]), text=text, lang=lang_code))
             else:
                 pirates.append(Pirate(id=UUID(row[0]), text=row[1], lang=lang_field))
-        return pirates
+        filtered = [PirateLangOut(id=p.id, text=p.text, lang=p.lang) for p in pirates if p.lang == lang]
+        total = len(filtered)
+        total_pages = (total + limit - 1) // limit if total > 0 else 1
+        start = (page - 1) * limit
+        end = start + limit
+        items = filtered[start:end]
+        return items, total, page, limit, total_pages
     except Exception as e:
         raise RuntimeError(f"Database error: {e}")
-
+    
 def get_random_pirate() -> Optional[Pirate]:
     try:
         conn = sqlite3.connect(DB_PATH)
