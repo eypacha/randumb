@@ -30,6 +30,20 @@ A modular FastAPI API for generating and managing random dumb things, such as pi
 
 The API will be available at `http://localhost:8000` with Swagger docs at `http://localhost:8000/docs`.
 
+## Development: Black & pre-commit
+
+This repository includes a `.pre-commit-config.yaml` that runs Black (the Python formatter)
+and some basic hygiene hooks before each commit. To enable the hooks locally:
+
+```bash
+pip install pre-commit
+pre-commit install
+# optional: run against all files once
+pre-commit run --all-files
+```
+
+Black configuration is in `pyproject.toml`.
+
 ## Endpoints
 
 The API dynamically generates endpoints for each configured resource. Currently supported resources:

@@ -3,11 +3,11 @@ from dotenv import load_dotenv
 from app.config.resources import RESOURCES
 from app.routes.generic import create_generic_router
 from app.functions import generic_crud
+import os
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
-# Build OpenAPI tags metadata from RESOURCES so each resource shows a description
-# in the Swagger UI next to its section header.
 openapi_tags = []
 for resource_name, cfg in RESOURCES.items():
     openapi_tags.append(
@@ -22,6 +22,21 @@ app = FastAPI(
     description="API for random dumb things",
     version="0.1.0",
     openapi_tags=openapi_tags,
+)
+
+# Configure CORS (ALLOWED_ORIGINS env var, comma-separated, default="*")
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "*")
+if allowed_origins_env.strip() == "*":
+    allowed_origins = ["*"]
+else:
+    allowed_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
