@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Path, Query
 from pydantic import BaseModel
 from uuid import UUID
 from typing import List
+import os
 
 
 def create_generic_router(resource_name: str, config: dict, crud):
@@ -23,13 +24,6 @@ def create_generic_router(resource_name: str, config: dict, crud):
         limit: int
         total_pages: int
 
-    @router.post("/", response_model=ItemOut)
-    def create_item(item: ItemCreate):
-        try:
-            return crud.create_item(resource_name, item)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
-
     @router.get("/{lang}", response_model=PaginatedList)
     def list_items_by_lang(
         lang: str = Path(...),
@@ -41,15 +35,24 @@ def create_generic_router(resource_name: str, config: dict, crud):
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @router.delete("/{id}", status_code=204)
-    def delete_item(id: UUID = Path(...)):
-        try:
-            deleted = crud.delete_item(resource_name, str(id))
-            if not deleted:
-                raise HTTPException(status_code=404, detail="Item not found.")
-        except HTTPException:
-            raise
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+    if os.getenv("ENABLE_CREATE", "true").lower() == "true":
+        @router.post("/", response_model=ItemOut)
+        def create_item(item: ItemCreate):
+            try:
+                return crud.create_item(resource_name, item)
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
+
+    if os.getenv("ENABLE_DELETE", "true").lower() == "true":
+        @router.delete("/{id}", status_code=204)
+        def delete_item(id: UUID = Path(...)):
+            try:
+                deleted = crud.delete_item(resource_name, str(id))
+                if not deleted:
+                    raise HTTPException(status_code=404, detail="Item not found.")
+            except HTTPException:
+                raise
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
 
     return router

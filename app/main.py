@@ -1,7 +1,10 @@
 from fastapi import FastAPI
+from dotenv import load_dotenv
 from app.config.resources import RESOURCES
 from app.routes.generic import create_generic_router
 from app.functions import generic_crud
+
+load_dotenv()
 
 app = FastAPI(
     title="Randumb API", description="API for random dumb things", version="0.1.0"

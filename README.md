@@ -1,9 +1,15 @@
 
 # Randumb API
 
-Example API using FastAPI, SQLite, and Pydantic for random dumb things.
+A modular FastAPI API for generating and managing random dumb things, such as pirate insults and excuses. Built with FastAPI, SQLite, Pydantic, and designed for easy extension to new resources.
 
-This project is designed to let you create and retrieve random silly content, starting with pirate insults, but easily extendable to any other kind of random fun data.
+## Features
+
+- Modular architecture with dynamic resource generation
+- Pagination support for list endpoints
+- Environment-based endpoint control for production
+- SQLite database with automatic table initialization
+- Swagger UI documentation
 
 ## Quick Start
 
@@ -11,22 +17,47 @@ This project is designed to let you create and retrieve random silly content, st
    ```sh
    pip install -r requirements.txt
    ```
-2. Run the server (from the project root):
+
+2. Copy the environment file:
+   ```sh
+   cp .env.example .env
+   ```
+
+3. Run the server:
    ```sh
    uvicorn app.main:app --reload
    ```
 
+The API will be available at `http://localhost:8000` with Swagger docs at `http://localhost:8000/docs`.
+
 ## Endpoints
 
-- `POST /pirates/` — Add a pirate insult (example resource)
-- `GET /pirates/` — List all pirate insults
+The API dynamically generates endpoints for each configured resource. Currently supported resources:
 
-## Structure
+### Pirates
+- `POST /pirates/` — Create a new pirate insult
+- `GET /pirates/?page=1&limit=10` — List pirate insults with pagination
+- `DELETE /pirates/` — Delete multiple pirate insults
 
-- `app/models/` — Database models (ready to grow)
-- `app/schemas/` — Pydantic schemas (see `pirates.py`)
-- `app/functions/` — Business logic and data access (see `pirates.py`)
-- `app/routes/` — API endpoints (see `pirates.py`)
+### Excuses
+- `POST /excuses/` — Create a new excuse
+- `GET /excuses/?page=1&limit=10` — List excuses with pagination
+- `DELETE /excuses/` — Delete multiple excuses
+
+## Configuration
+
+Resources are defined in `app/config/resources.py`. Add new resources there to extend the API.
+
+Environment variables in `.env`:
+- `ENABLE_CREATE`: Enable/disable POST endpoints for all resources
+- `ENABLE_DELETE`: Enable/disable DELETE endpoints for all resources
+
+## Project Structure
+
+- `app/config/` — Resource configurations
+- `app/routes/` — Dynamic router generation
+- `app/functions/` — Generic CRUD operations
+- `app/schemas/` — Pydantic models (generated dynamically)
 - `app/main.py` — Application entry point
-
-The root folder contains only configuration and documentation files.
+- `requirements.txt` — Python dependencies
+- `pyproject.toml` — Black formatter configuration
