@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.pirates import Pirate
-from app.functions.pirates import add_pirate, init_db, get_all_pirates
+from app.functions.pirates import add_pirate, init_db, get_all_pirates, get_random_pirate
 from typing import Dict
 
 router = APIRouter(prefix="/pirates", tags=["Pirates insults"])
@@ -19,4 +19,10 @@ def create_pirate(pirate: Pirate):
 def list_pirates():
     return get_all_pirates()
 
+@router.get("/random", response_model=Pirate, summary="Get a random pirate insult", description="Retrieve a random pirate insult from the database.")
+def get_random_pirate_insult():
+    pirate = get_random_pirate()
+    if not pirate:
+        raise HTTPException(status_code=404, detail="No pirate insults found.")
+    return pirate
 

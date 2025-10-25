@@ -1,3 +1,12 @@
+def get_random_pirate() -> Optional[Pirate]:
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT id, text FROM pirates ORDER BY RANDOM() LIMIT 1")
+    row = c.fetchone()
+    conn.close()
+    if row:
+        return Pirate(id=row[0], text=row[1])
+    return None
 
 import sqlite3
 from typing import List, Optional
