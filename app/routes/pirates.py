@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.pirates import Pirate
+from app.schemas.pirates import Pirate, PirateCreate, PirateLangOut, PirateLangOutSingle
+from fastapi import Path
 from app.functions.pirates import add_pirate, init_db, get_all_pirates, get_random_pirate
 from typing import Dict
 
@@ -9,20 +10,22 @@ router = APIRouter(prefix="/pirates", tags=["Pirates insults"])
 def startup_event():
     init_db()
 
-@router.post("/", response_model=Dict[str, int], summary="Create a pirate insult", description="Add a new pirate insult to the database.")
-def create_pirate(pirate: Pirate):
+@router.post("/", response_model=Pirate, summary="Create a pirate insult", description="Add a new pirate insult to the database.")
+def create_pirate(pirate: PirateCreate):
     pirate_id = add_pirate(pirate)
-    return {"id": pirate_id}
+    return Pirate(id=pirate_id, text=pirate.text, lang=pirate.lang)
+
+@router.get("/{lang}", response_model=list[PirateLangOut], summary="List pirate insults by language", description="Get all pirate insults in the requested language.")
+def list_pirates_by_lang(lang: str = Path(..., description="ISO code for language, e.g. 'en' or 'es'")):
+    pirates = get_all_pirates()
+    # p.lang ahora es string, no dict
+    return [PirateLangOut(id=p.id, text=p.text, lang=p.lang) for p in pirates if p.lang == lang]
 
 
-@router.get("/", response_model=list[Pirate], summary="List pirate insults", description="Get all pirate insults from the database.")
-def list_pirates():
-    return get_all_pirates()
-
-@router.get("/random", response_model=Pirate, summary="Get a random pirate insult", description="Retrieve a random pirate insult from the database.")
-def get_random_pirate_insult():
+@router.get("/random/{lang}", response_model=PirateLangOutSingle, summary="Get a random pirate insult in a language", description="Retrieve a random pirate insult in the requested language from the database.")
+def get_random_pirate_insult_lang(lang: str = Path(..., description="ISO code for language, e.g. 'en' or 'es'")):
     pirate = get_random_pirate()
-    if not pirate:
-        raise HTTPException(status_code=404, detail="No pirate insults found.")
-    return pirate
+    if not pirate or pirate.lang != lang:
+        raise HTTPException(status_code=404, detail="No pirate insults found for this language.")
+    return PirateLangOutSingle(id=pirate.id, text=pirate.text, lang=pirate.lang)
 
