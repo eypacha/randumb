@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 from app.config.resources import RESOURCES
 from app.routes.generic import create_generic_router
+from app.routes.health import router as health_router
 from app.functions import generic_crud
 import os
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,3 +49,6 @@ def startup_event():
 for resource, config in RESOURCES.items():
     router = create_generic_router(resource, config, generic_crud)
     app.include_router(router)
+
+# include health routes (liveness/readiness)
+app.include_router(health_router)
