@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from uuid import UUID
 from typing import List
 
+
 def create_generic_router(resource_name: str, config: dict, crud):
     router = APIRouter(prefix=f"/{resource_name}", tags=[resource_name.capitalize()])
 

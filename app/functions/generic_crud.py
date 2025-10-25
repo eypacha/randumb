@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 DB_PATH = "dumb.db"
 
+
 def create_item(resource: str, item: BaseModel):
     try:
         conn = sqlite3.connect(DB_PATH)
@@ -22,6 +23,7 @@ def create_item(resource: str, item: BaseModel):
         return {"id": item_id, "text": item.text, "lang": item.lang}
     except Exception as e:
         raise RuntimeError(f"Database error: {e}")
+
 
 def list_items_by_lang(resource: str, lang: str, page: int, limit: int):
     try:
@@ -55,6 +57,7 @@ def list_items_by_lang(resource: str, lang: str, page: int, limit: int):
     except Exception as e:
         raise RuntimeError(f"Database error: {e}")
 
+
 def init_tables(resources: dict):
     """Inicializa las tablas para cada recurso si no existen."""
     try:
@@ -62,13 +65,15 @@ def init_tables(resources: dict):
         c = conn.cursor()
         for resource, config in resources.items():
             table = config["table"]
-            c.execute(f"""
+            c.execute(
+                f"""
                 CREATE TABLE IF NOT EXISTS {table} (
                     id TEXT PRIMARY KEY,
                     text TEXT NOT NULL,
                     lang TEXT NOT NULL
                 )
-            """)
+            """
+            )
         conn.commit()
         conn.close()
     except Exception as e:
