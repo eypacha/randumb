@@ -26,6 +26,14 @@ app = FastAPI(
     root_path="/randumb/api"
 )
 
+# above block its for me, commented out the original initialization
+# app = FastAPI(
+#     title="Randumb API",
+#     description="API for random dumb things",
+#     version="0.1.0",
+#     openapi_tags=openapi_tags
+# )
+
 # Configure CORS (ALLOWED_ORIGINS env var, comma-separated, default="*")
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "*")
 if allowed_origins_env.strip() == "*":
