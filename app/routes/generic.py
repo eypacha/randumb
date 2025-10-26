@@ -28,6 +28,23 @@ def create_generic_router(resource_name: str, config: dict, crud):
     singular = config.get("singular", f"{resource_name} item")
 
     @router.get(
+        "/random",
+        response_model=ItemOut,
+        summary=f"Get a random {singular}",
+        description=f"Returns a single random {singular}. Optionally filter by language with ?lang=xx",
+    )
+    def get_random_item(lang: str = Query(None, description="Optional language code to filter by")):
+        try:
+            item = crud.get_random_item(resource_name, lang)
+            if not item:
+                raise HTTPException(status_code=404, detail="No items found.")
+            return item
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @router.get(
         "/{lang}",
         response_model=PaginatedList,
         summary=f"List {plural}",
@@ -40,6 +57,23 @@ def create_generic_router(resource_name: str, config: dict, crud):
     ):
         try:
             return crud.list_items_by_lang(resource_name, lang, page, limit)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    @router.get(
+        "/random",
+        response_model=ItemOut,
+        summary=f"Get a random {singular}",
+        description=f"Returns a single random {singular}. Optionally filter by language with ?lang=xx",
+    )
+    def get_random_item(lang: str = Query(None, description="Optional language code to filter by")):
+        try:
+            item = crud.get_random_item(resource_name, lang)
+            if not item:
+                raise HTTPException(status_code=404, detail="No items found.")
+            return item
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 

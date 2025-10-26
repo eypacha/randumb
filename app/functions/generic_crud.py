@@ -3,6 +3,7 @@ from uuid import uuid4, UUID
 import json
 from typing import List
 from pydantic import BaseModel
+import random
 
 DB_PATH = "dumb.db"
 
@@ -78,3 +79,37 @@ def init_tables(resources: dict):
         conn.close()
     except Exception as e:
         raise RuntimeError(f"Database initialization error: {e}")
+
+
+def get_random_item(resource: str, lang: str = None):
+    """Return a random item from the given resource.
+
+    If `lang` is provided, only items matching that language will be considered.
+    Returns a dict with keys 'id', 'text', 'lang' or None if no matching items.
+    """
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute(f"SELECT id, text, lang FROM {resource}")
+        rows = c.fetchall()
+        conn.close()
+
+        candidates = []
+        for row in rows:
+            # row: (id, text, lang)
+            lang_field = json.loads(row[2])
+            if isinstance(lang_field, dict):
+                lang_code, text_val = next(iter(lang_field.items()))
+            else:
+                lang_code = lang_field
+                text_val = row[1]
+
+            if lang is None or lang_code == lang:
+                candidates.append({"id": row[0], "text": text_val, "lang": lang_code})
+
+        if not candidates:
+            return None
+
+        return random.choice(candidates)
+    except Exception as e:
+        raise RuntimeError(f"Database error: {e}")
