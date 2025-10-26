@@ -23,7 +23,7 @@ app = FastAPI(
     description="API for random dumb things",
     version="0.1.0",
     openapi_tags=openapi_tags,
-    root_path="/randumb/api"
+    root_path="/randumb/api",
 )
 
 # above block its for me, commented out the original initialization

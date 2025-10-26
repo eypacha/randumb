@@ -33,7 +33,9 @@ def create_generic_router(resource_name: str, config: dict, crud):
         summary=f"Get a random {singular}",
         description=f"Returns a single random {singular}. Optionally filter by language with ?lang=xx",
     )
-    def get_random_item(lang: str = Query(None, description="Optional language code to filter by")):
+    def get_random_item(
+        lang: str = Query(None, description="Optional language code to filter by")
+    ):
         try:
             item = crud.get_random_item(resource_name, lang)
             if not item:
@@ -66,7 +68,9 @@ def create_generic_router(resource_name: str, config: dict, crud):
         summary=f"Get a random {singular}",
         description=f"Returns a single random {singular}. Optionally filter by language with ?lang=xx",
     )
-    def get_random_item(lang: str = Query(None, description="Optional language code to filter by")):
+    def get_random_item(
+        lang: str = Query(None, description="Optional language code to filter by")
+    ):
         try:
             item = crud.get_random_item(resource_name, lang)
             if not item:

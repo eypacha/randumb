@@ -11,7 +11,11 @@ def health():
     return {"status": "ok"}
 
 
-@router.get("/ready", summary="Readiness probe", description="Checks database connectivity and readiness.")
+@router.get(
+    "/ready",
+    summary="Readiness probe",
+    description="Checks database connectivity and readiness.",
+)
 def readiness():
     try:
         # Attempt to open a connection and run a simple query
@@ -22,4 +26,7 @@ def readiness():
         conn.close()
         return {"status": "ready"}
     except Exception as e:
-        return JSONResponse(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, content={"status": "not ready", "reason": str(e)})
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "not ready", "reason": str(e)},
+        )
