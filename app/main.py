@@ -23,6 +23,7 @@ app = FastAPI(
     description="API for random dumb things",
     version="0.1.0",
     openapi_tags=openapi_tags,
+    root_path="/randumb/api"
 )
 
 # Configure CORS (ALLOWED_ORIGINS env var, comma-separated, default="*")
