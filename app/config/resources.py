@@ -13,4 +13,12 @@ RESOURCES = {
         "singular": "excuse",
         "plural": "excuses",
     },
+    "conspiracies": {
+        "description": "Absurd and funny conspiracy theories",
+        "fields": ["text", "lang"],
+        "table": "conspiracies",
+        "singular": "conspiracy",
+        "plural": "conspiracies",
+    },
+
 }
